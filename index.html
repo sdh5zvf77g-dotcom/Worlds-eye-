@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>World's Eye — See the World Live</title>
+  <meta name="description" content="World's Eye: free public live cameras from everywhere on Earth. One hub to 155,000+ feeds." />
+  <meta name="theme-color" content="#070b10" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="World's Eye" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="World's Eye" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #070b10;
+      --surface: #111820;
+      --surface-2: #1a2330;
+      --border: #2a3544;
+      --text: #eef3f9;
+      --muted: #8b9bb0;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --live: #ef4444;
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --purple: #a855f7;
+      --radius: 16px;
+      --shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(7, 11, 16, 0.9);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+    }
+    .header-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 800; font-size: 1.3rem; letter-spacing: -0.03em;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      object-fit: cover; border: 2px solid #2a3544;
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.3);
+    }
+    .install-banner {
+      display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      z-index: 150; max-width: 92vw; width: 360px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 14px 16px; box-shadow: var(--shadow);
+      align-items: center; gap: 12px;
+    }
+    .install-banner.show { display: flex; }
+    .install-banner img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }
+    .install-banner .txt { flex: 1; font-size: 0.85rem; }
+    .install-banner .txt strong { display: block; font-size: 0.95rem; }
+    .install-banner button {
+      border: none; background: var(--accent); color: white; font-weight: 600;
+      padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 0.85rem;
+    }
+    .install-banner .dismiss {
+      background: transparent; color: var(--muted); padding: 6px 8px; font-size: 1.1rem;
+    }
+    .install-help {
+      margin: 28px auto 0;
+      max-width: 560px;
+      text-align: left;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+    }
+    .install-help-title {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .install-steps { display: flex; flex-direction: column; gap: 12px; }
+    .step {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.45;
+      padding: 10px 12px;
+      background: var(--surface-2);
+      border-radius: 10px;
+    }
+    .step strong { color: var(--text); }
+    .step em { color: #93c5fd; font-style: normal; }
+    .header-note { color: var(--muted); font-size: 0.85rem; }
+    .hero {
+      max-width: 1200px; margin: 0 auto; padding: 40px 20px 28px; text-align: center;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 800;
+      letter-spacing: -0.04em; margin-bottom: 12px; line-height: 1.15;
+    }
+    .hero h1 span {
+      background: linear-gradient(90deg, #60a5fa, #a78bfa, #34d399);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero p {
+      color: var(--muted); font-size: 1.05rem; max-width: 640px; margin: 0 auto 28px;
+    }
+    .hero-stats {
+      display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; margin-bottom: 8px;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat strong { display: block; font-size: 1.5rem; font-weight: 800; color: var(--text); }
+    .hero-stat span { font-size: 0.8rem; color: var(--muted); }
+    main { max-width: 1200px; margin: 0 auto; padding: 10px 20px 70px; }
+    .section-label {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin: 36px 0 14px; display: flex; align-items: center; gap: 10px;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .mega-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;
+    }
+    .mega {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 22px; text-decoration: none; color: inherit;
+      display: flex; flex-direction: column; gap: 10px;
+      transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+      position: relative; overflow: hidden;
+    }
+    .mega:hover {
+      transform: translateY(-4px); border-color: #3d4a5c; box-shadow: var(--shadow);
+    }
+    .mega.featured {
+      border-color: #3b82f6;
+      background: linear-gradient(145deg, #111820 0%, #0f1a2e 100%);
+    }
+    .mega.featured::before {
+      content: 'LARGEST'; position: absolute; top: 12px; right: 12px;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em;
+      background: var(--accent); color: white; padding: 3px 8px; border-radius: 4px;
+    }
+    .mega-icon { font-size: 1.8rem; line-height: 1; }
+    .mega h2 { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; }
+    .mega p { color: var(--muted); font-size: 0.9rem; flex: 1; }
+    .mega-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+    .badge {
+      font-size: 0.75rem; font-weight: 600; padding: 3px 9px; border-radius: 999px;
+      background: var(--surface-2); color: var(--muted);
+    }
+    .badge.green { background: rgba(34,197,94,0.15); color: var(--green); }
+    .badge.blue { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .badge.orange { background: rgba(245,158,11,0.15); color: var(--orange); }
+    .badge.purple { background: rgba(168,85,247,0.15); color: #c084fc; }
+    .mega-cta {
+      display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;
+      font-size: 0.9rem; font-weight: 600; color: var(--accent);
+    }
+    .quick { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+    .quick a {
+      display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+      color: var(--text); text-decoration: none; font-size: 0.875rem; font-weight: 500;
+      transition: all 0.15s;
+    }
+    .quick a:hover { background: var(--surface-2); border-color: #3d4a5c; }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .chip {
+      padding: 7px 14px; border-radius: 999px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted); font-size: 0.85rem; font-weight: 500;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .chip:hover { color: var(--text); border-color: #3d4a5c; }
+    .chip.active { background: var(--accent); border-color: var(--accent); color: white; }
+    .grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;
+    }
+    .card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; transition: transform 0.18s, border-color 0.18s;
+      display: flex; flex-direction: column;
+    }
+    .card:hover { transform: translateY(-3px); border-color: #3d4a5c; }
+    .card-top { padding: 18px 18px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .card-title { font-weight: 600; font-size: 1.05rem; }
+    .card-loc { color: var(--muted); font-size: 0.85rem; }
+    .card-note { color: var(--muted); font-size: 0.82rem; margin-top: 4px; }
+    .card-actions { padding: 0 18px 18px; display: flex; gap: 8px; }
+    .btn {
+      flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 12px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--surface-2); color: var(--text); font-size: 0.85rem; font-weight: 500;
+      cursor: pointer; text-decoration: none; transition: all 0.15s;
+    }
+    .btn:hover { border-color: #4a5a6e; }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .info {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px; margin-top: 32px; color: var(--muted); font-size: 0.9rem;
+    }
+    .info strong { color: var(--text); }
+    footer {
+      max-width: 1200px; margin: 0 auto; padding: 24px 20px 50px;
+      border-top: 1px solid var(--border); color: var(--muted); font-size: 0.85rem; text-align: center;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 600px) {
+      .hero-stats { gap: 18px; }
+      .mega-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <img class="logo-icon" src="icons/icon-192.png" alt="" width="36" height="36" />
+        World's Eye
+      </div>
+      <div class="header-note">See the world live · Free</div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>World's Eye<br><span>see every free camera</span></h1>
+    <p>
+      Your window to every free public live camera on Earth.  
+      One-click access to the largest directories — 155,000+ feeds from official sources worldwide.
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>155k+</strong><span>largest directory</span></div>
+      <div class="hero-stat"><strong>74k+</strong><span>map-based cams</span></div>
+      <div class="hero-stat"><strong>130+</strong><span>countries</span></div>
+      <div class="hero-stat"><strong>0$</strong><span>always free</span></div>
+    </div>
+
+    <div class="install-help" id="installHelp">
+      <div class="install-help-title">📱 Add to Home Screen</div>
+      <div class="install-steps">
+        <div class="step">
+          <strong>iPhone</strong>
+          Open this page in <em>Safari</em> → tap the Share button →
+          <strong>Add to Home Screen</strong> → Add
+        </div>
+        <div class="step">
+          <strong>Android</strong>
+          Open in <em>Chrome</em> → tap menu ⋮ →
+          <strong>Install app</strong> or <strong>Add to Home screen</strong>
+        </div>
+        <div class="step">
+          <strong>Must use HTTPS</strong>
+          Host on GitHub Pages (or any https site). Opening a local file will not install.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="section-label">Quick launch — open full collections</div>
+    <div class="quick">
+      <a href="https://trafficvision.live/map" target="_blank" rel="noopener">🗺️ 155k+ Map</a>
+      <a href="https://livecamsmap.com/" target="_blank" rel="noopener">🌍 LiveCamsMap</a>
+      <a href="https://worldcam.tv/" target="_blank" rel="noopener">📡 WorldCam</a>
+      <a href="https://openwebcamdb.com/" target="_blank" rel="noopener">📂 OpenWebcamDB</a>
+      <a href="https://earthlive24.com/" target="_blank" rel="noopener">🌐 EarthLive24</a>
+      <a href="https://livemaps.tv/" target="_blank" rel="noopener">🌐 3D Globe</a>
+    </div>
+
+    <div class="section-label">Complete free directories (this is how you reach “all” cameras)</div>
+    <div class="mega-grid">
+
+      <a class="mega featured" href="https://trafficvision.live/map" target="_blank" rel="noopener">
+        <div class="mega-icon">🗺️</div>
+        <h2>TrafficVision.Live</h2>
+        <p>
+          The largest free public camera collection on the web.  
+          Highway, street, nature, wildlife, weather, ports, polar and space cameras from official government and agency sources.
+        </p>
+        <div class="mega-meta">
+          <span class="badge green">155,000+ cameras</span>
+          <span class="badge blue">130+ countries</span>
+          <span class="badge">Free · No signup</span>
+        </div>
+        <div class="mega-cta">Open interactive world map →</div>
+      </a>
+
+      <a class="mega featured" href="https://livecamsmap.com/" target="_blank" rel="noopener">
+        <div class="mega-icon">🌍</div>
+        <h2>LiveCamsMap</h2>
+        <p>
+          Tens of thousands of public live webcams plotted on one interactive map.  
+          Beaches, city skylines, mountains, ports, ski resorts and wildlife — free forever.
+        </p>
+        <div class="mega-meta">
+          <span class="badge green">74,000+ live cams</span>
+          <span class="badge blue">Map view</span>
+          <span class="badge">Free · No signup</span>
+        </div>
+        <div class="mega-cta">Open full map →</div>
+      </a>
+
+      <a class="mega" href="https://worldcam.tv/" target="_blank" rel="noopener">
+        <div class="mega-icon">📡</div>
+        <h2>WorldCam</h2>
+        <p>
+          Verified live webcams from cities, beaches, mountains, harbours and landmarks in 90+ countries. Clean, categorized directory.
+        </p>
+        <div class="mega-meta">
+          <span class="badge green">1,300+ live</span>
+          <span class="badge">90+ countries</span>
+        </div>
+        <div class="mega-cta">Browse WorldCam →</div>
+      </a>
+
+      <a class="mega" href="https://openwebcamdb.com/" target="_blank" rel="noopener">
+        <div class="mega-icon">📂</div>
+        <h2>OpenWebcamDB</h2>
+        <p>
+          Hand-checked live streams. Curated daily, zero ads, strong quality filter. Great for reliable viewing.
+        </p>
+        <div class="mega-meta">
+          <span class="badge green">1,500–1,900 live</span>
+          <span class="badge">Curated</span>
+        </div>
+        <div class="mega-cta">Open directory →</div>
+      </a>
+
+      <a class="mega" href="https://earthlive24.com/" target="_blank" rel="noopener">
+        <div class="mega-icon">🌐</div>
+        <h2>EarthLive24</h2>
+        <p>
+          Cities, nature, airports, wildlife and even space cams. Supports multi-view so you can watch many at once.
+        </p>
+        <div class="mega-meta">
+          <span class="badge green">400+ cams</span>
+          <span class="badge purple">Multi-view</span>
+        </div>
+        <div class="mega-cta">Open EarthLive24 →</div>
+      </a>
+
+      <a class="mega" href="https://livemaps.tv/" target="_blank" rel="noopener">
+        <div class="mega-icon">🌐</div>
+        <h2>Live Maps</h2>
+        <p>
+          100+ high-quality YouTube live webcams on a beautiful interactive 3D globe. Great for exploration and “guess the country”.
+        </p>
+        <div class="mega-meta">
+          <span class="badge green">100+ streams</span>
+          <span class="badge blue">3D Globe</span>
+        </div>
+        <div class="mega-cta">Spin the globe →</div>
+      </a>
+
+      <a class="mega" href="https://www.youtube.com/@EarthCam/streams" target="_blank" rel="noopener">
+        <div class="mega-icon">📺</div>
+        <h2>EarthCam (YouTube)</h2>
+        <p>
+          Official EarthCam live streams — Times Square, landmarks, cities and more in high quality, free on YouTube.
+        </p>
+        <div class="mega-meta">
+          <span class="badge green">Many live</span>
+          <span class="badge orange">YouTube</span>
+        </div>
+        <div class="mega-cta">Watch on YouTube →</div>
+      </a>
+
+      <a class="mega" href="https://www.windy.com/webcams" target="_blank" rel="noopener">
+        <div class="mega-icon">💨</div>
+        <h2>Windy Webcams</h2>
+        <p>
+          Large community webcam network integrated with weather maps. Excellent for checking conditions worldwide.
+        </p>
+        <div class="mega-meta">
+          <span class="badge green">Tens of thousands</span>
+          <span class="badge">Weather + cams</span>
+        </div>
+        <div class="mega-cta">Open Windy Webcams →</div>
+      </a>
+    </div>
+
+    <div class="section-label">Curated starter set (popular destinations)</div>
+    <div class="filters" id="filters">
+      <button class="chip active" data-cat="all">All</button>
+      <button class="chip" data-cat="city">Cities</button>
+      <button class="chip" data-cat="beach">Beaches</button>
+      <button class="chip" data-cat="nature">Nature & Wildlife</button>
+      <button class="chip" data-cat="landmark">Landmarks</button>
+      <button class="chip" data-cat="space">Space & Sky</button>
+    </div>
+    <div class="grid" id="grid"></div>
+
+    <div class="info">
+      <strong>Why a hub instead of one giant list?</strong><br>
+      Free public cameras are published by thousands of different sources (city tourism boards, national parks, state DOTs, universities, YouTube channels, weather services…).  
+      Feeds go online and offline every day. The only practical way to have access to <em>all</em> of them is to use the large aggregators that continuously discover and verify the streams.  
+      The cards above open the biggest free ones currently available. Bookmark this page — it is your permanent entry point.
+    </div>
+  </main>
+
+  <footer>
+    World's Eye · Public free cameras only · Install to your phone home screen
+  </footer>
+
+  <script>
+    const CAMS = [
+      { title: "Times Square, New York", location: "New York, USA", category: "city", note: "Iconic 24/7 NYC energy", url: "https://www.youtube.com/results?search_query=Times+Square+live+webcam" },
+      { title: "Shibuya Crossing", location: "Tokyo, Japan", category: "city", note: "World’s busiest pedestrian crossing", url: "https://www.youtube.com/results?search_query=Shibuya+Crossing+live+webcam" },
+      { title: "Eiffel Tower area", location: "Paris, France", category: "landmark", note: "Classic Paris landmark", url: "https://www.youtube.com/results?search_query=Eiffel+Tower+live+webcam" },
+      { title: "Venice Canals", location: "Venice, Italy", category: "city", note: "Gondolas & canals live", url: "https://www.youtube.com/results?search_query=Venice+live+webcam+canal" },
+      { title: "Bondi Beach", location: "Sydney, Australia", category: "beach", note: "Famous Sydney beach", url: "https://www.youtube.com/results?search_query=Bondi+Beach+live+webcam" },
+      { title: "Copacabana Beach", location: "Rio de Janeiro, Brazil", category: "beach", note: "Iconic Brazilian beach", url: "https://www.youtube.com/results?search_query=Copacabana+Beach+live+webcam" },
+      { title: "Grand Canyon", location: "Arizona, USA", category: "nature", note: "Desert canyon views", url: "https://www.youtube.com/results?search_query=Grand+Canyon+live+webcam" },
+      { title: "Santorini / Oia", location: "Santorini, Greece", category: "landmark", note: "Whitewashed cliffs & sunsets", url: "https://www.youtube.com/results?search_query=Santorini+Oia+live+webcam" },
+      { title: "Dubai Marina", location: "Dubai, UAE", category: "city", note: "Modern skyline & marina", url: "https://www.youtube.com/results?search_query=Dubai+Marina+live+webcam" },
+      { title: "Katmai Bears", location: "Alaska, USA", category: "nature", note: "Brown bears fishing salmon", url: "https://www.youtube.com/results?search_query=Katmai+Brooks+Falls+live+bears" },
+      { title: "Ocean / Underwater", location: "Various (Explore.org)", category: "nature", note: "Sharks, reefs, marine life", url: "https://www.youtube.com/results?search_query=explore.org+live+ocean+webcam" },
+      { title: "African Wildlife", location: "Kenya / South Africa", category: "nature", note: "Savanna animals live", url: "https://www.youtube.com/results?search_query=Africa+safari+live+webcam+wildlife" },
+      { title: "Northern Lights", location: "Norway / Iceland / Canada", category: "space", note: "Best on dark winter nights", url: "https://www.youtube.com/results?search_query=northern+lights+live+webcam+aurora" },
+      { title: "Earth from ISS / NASA", location: "Low Earth Orbit", category: "space", note: "Live views from space", url: "https://www.youtube.com/results?search_query=NASA+live+ISS+earth+view" },
+      { title: "London streets", location: "London, UK", category: "city", note: "Trafalgar & city views", url: "https://www.youtube.com/results?search_query=London+live+webcam+Trafalgar" },
+      { title: "Seoul streets", location: "Seoul, South Korea", category: "city", note: "Busy Korean capital", url: "https://www.youtube.com/results?search_query=Seoul+live+webcam" },
+      { title: "Active Volcanoes", location: "Hawaii / Iceland / others", category: "nature", note: "Lava & crater views", url: "https://www.youtube.com/results?search_query=volcano+live+webcam" },
+      { title: "Airport views", location: "Worldwide", category: "city", note: "Plane spotting & terminals", url: "https://www.youtube.com/results?search_query=airport+live+webcam+plane+spotting" }
+    ];
+
+    const grid = document.getElementById('grid');
+    const filters = document.getElementById('filters');
+    let currentCat = 'all';
+
+    function render() {
+      const list = currentCat === 'all' ? CAMS : CAMS.filter(c => c.category === currentCat);
+      grid.innerHTML = list.map(cam => `
+        <article class="card">
+          <div class="card-top">
+            <div class="card-title">${cam.title}</div>
+            <div class="card-loc">📍 ${cam.location}</div>
+            <div class="card-note">${cam.note}</div>
+          </div>
+          <div class="card-actions">
+            <a class="btn btn-primary" href="${cam.url}" target="_blank" rel="noopener">Watch live</a>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    filters.addEventListener('click', e => {
+      const chip = e.target.closest('.chip');
+      if (!chip) return;
+      filters.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentCat = chip.dataset.cat;
+      render();
+    });
+
+    render();
+  </script>
+
+  <div class="install-banner" id="installBanner">
+    <img src="icons/icon-192.png" alt="" />
+    <div class="txt">
+      <strong>Add World's Eye to Home Screen</strong>
+      Install for quick access like an app
+    </div>
+    <button type="button" id="installBtn">Install</button>
+    <button type="button" class="dismiss" id="installDismiss" aria-label="Dismiss">✕</button>
+  </div>
+  <script>
+    // Register service worker (only works over http/https, not file://)
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch((err) => {
+          console.warn('SW register failed', err);
+        });
+      });
+    }
+
+    // Android / Chrome install prompt
+    let deferredPrompt = null;
+    const banner = document.getElementById('installBanner');
+    const installBtn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (!localStorage.getItem('we-install-dismissed')) banner.classList.add('show');
+    });
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        banner.classList.remove('show');
+      });
+    }
+    const dismiss = document.getElementById('installDismiss');
+    if (dismiss) {
+      dismiss.addEventListener('click', () => {
+        banner.classList.remove('show');
+        localStorage.setItem('we-install-dismissed', '1');
+      });
+    }
+
+    // Warn if opened as local file
+    if (location.protocol === 'file:') {
+      const help = document.getElementById('installHelp');
+      if (help) {
+        help.style.borderColor = '#f59e0b';
+        help.querySelector('.install-help-title').textContent =
+          '⚠️ Open via GitHub Pages (HTTPS) to install on Home Screen';
+      }
+    }
+  </script>
+</body>
+</html>
